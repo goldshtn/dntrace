@@ -48,30 +48,31 @@ function destroy {
 }
 
 function record {
-    sudo lttng create $session --live --no-output
+    sudo lttng create $session --live
+    sudo lttng enable-channel --tracefile-size 1M --tracefile-count 5 -u chan
 
     if (( opt_pid )); then
         sudo lttng track --userspace --session $session --pid $pid
     fi
 
-    sudo lttng add-context --userspace --type vpid
-    sudo lttng add-context --userspace --type vtid
-    sudo lttng add-context --userspace --type procname
+    sudo lttng add-context --userspace --type vpid -c chan
+    sudo lttng add-context --userspace --type vtid -c chan
+    sudo lttng add-context --userspace --type procname -c chan
 
     if (( gc_enabled )); then
-        sudo lttng enable-event --userspace --tracepoint DotNETRuntime:GCStart*
-        sudo lttng enable-event --userspace --tracepoint DotNETRuntime:GCEnd*
-        sudo lttng enable-event --userspace --tracepoint DotNETRuntime:GCTriggered
+        sudo lttng enable-event --userspace -c chan --tracepoint DotNETRuntime:GCStart*
+        sudo lttng enable-event --userspace -c chan --tracepoint DotNETRuntime:GCEnd*
+        sudo lttng enable-event --userspace -c chan --tracepoint DotNETRuntime:GCTriggered
     fi
     if (( heap_enabled )); then
-        sudo lttng enable-event --userspace --tracepoint DotNETRuntime:GCHeapStats*
+        sudo lttng enable-event --userspace -c chan --tracepoint DotNETRuntime:GCHeapStats*
     fi
     if (( alloc_enabled )); then
-        sudo lttng enable-event --userspace --tracepoint \
+        sudo lttng enable-event --userspace -c chan --tracepoint \
                                 DotNETRuntime:GCAllocationTick*
     fi
     if (( exc_enabled )); then
-        sudo lttng enable-event --userspace --tracepoint DotNETRuntime:Exception*
+        sudo lttng enable-event --userspace -c chan --tracepoint DotNETRuntime:Exception*
     fi
 
     sudo lttng start $session

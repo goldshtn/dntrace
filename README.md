@@ -1,9 +1,9 @@
 ### dntrace
 
 This tool traces .NET Core runtime events, displays them in real-time, and
-aggregates them in memory to produce statistics. No events are recorded to
-disk, which provides for lightweight monitoring that can be sustained for long
-time intervals.
+aggregates them in memory to produce statistics. Only a small amount of events
+is stored on the disk as a cache (at most 5M per-cpu), which provides for
+lightweight monitoring that can be sustained for long time intervals.
 
 > This tool is not production-ready; use at your own risk. It was briefly
 > tested with .NET Core 2.0 on Fedora. Other distributions or versions might
